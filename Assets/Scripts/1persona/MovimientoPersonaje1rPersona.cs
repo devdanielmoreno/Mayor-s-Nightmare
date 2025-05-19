@@ -23,6 +23,11 @@ public class MovimientoPersonaje1rPersona : MonoBehaviour
             PlayerPrefs.DeleteKey("VolverY");
             PlayerPrefs.DeleteKey("VolverZ");
         }
+        if (JugadorManager.volverDesdeMinijuego)
+        {
+            transform.position = JugadorManager.ultimaPosicion;
+            JugadorManager.volverDesdeMinijuego = false;
+        }
     }
 
 

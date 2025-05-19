@@ -89,6 +89,7 @@ public class BasketballController : MonoBehaviour {
 
     private IEnumerator ReturnToScene() {
         yield return new WaitForSeconds(1f);
+        JugadorManager.minijuego2Completado = true;
         SceneManager.LoadScene("FinalScene");
     }
 }
