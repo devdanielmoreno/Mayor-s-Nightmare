@@ -16,6 +16,9 @@ public class InteractuarMaquina : MonoBehaviour
     private string escenaPendiente = "";
     private bool enTransicion = false;
 
+    private Vector3 posicionOriginal;
+    private Quaternion rotacionOriginal;
+
     void Start()
     {
         if (camaraPrincipal == null)
@@ -26,7 +29,7 @@ public class InteractuarMaquina : MonoBehaviour
 
     void Update()
     {
-        if (enTransicion) return;
+        if (enTransicion) return; 
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -78,39 +81,39 @@ public class InteractuarMaquina : MonoBehaviour
         mostrandoMensaje = true;
     }
 
-IEnumerator AnimarCamaraYEjecutar(string escena, Vector3 objetivo)
-{
-    enTransicion = true;
-    
-    float fovOriginal = camaraPrincipal.fieldOfView;
-    float fovDestino = 10f;
-    
-
-    float duracion = 1.5f;
-    float tiempo = 0f;
-
-    while (tiempo < duracion)
+    IEnumerator AnimarCamaraYEjecutar(string escena, Vector3 objetivo)
     {
-        float t = tiempo / duracion;
+        enTransicion = true;
+
+        posicionOriginal = camaraPrincipal.transform.position;
+        rotacionOriginal = camaraPrincipal.transform.rotation;
+        float fovOriginal = camaraPrincipal.fieldOfView;
+        float fovDestino = 10f; 
         
-        camaraPrincipal.fieldOfView = Mathf.Lerp(fovOriginal, fovDestino, t);
+        float duracion = 1.5f;
+        float tiempo = 0f;
 
-        tiempo += Time.deltaTime;
-        yield return null;
+        while (tiempo < duracion)
+        {
+            float t = tiempo / duracion;
+            camaraPrincipal.fieldOfView = Mathf.Lerp(fovOriginal, fovDestino, t);
+
+            tiempo += Time.deltaTime;
+            yield return null;
+        }
+
+        camaraPrincipal.fieldOfView = fovDestino;
+
+        yield return new WaitForSeconds(0.5f);
+
+        GameObject jugador = GameObject.FindWithTag("Jugador");
+        if (jugador != null)
+        {
+            JugadorManager.ultimaPosicion = jugador.transform.position;
+            JugadorManager.volverDesdeMinijuego = true;
+        }
+
+        SceneManager.LoadScene(escena);
     }
-        
-    camaraPrincipal.fieldOfView = fovDestino;
-
-    yield return new WaitForSeconds(0.5f);
-
-    GameObject jugador = GameObject.FindWithTag("Jugador");
-    if (jugador != null)
-    {
-        JugadorManager.ultimaPosicion = jugador.transform.position;
-        JugadorManager.volverDesdeMinijuego = true;
-    }
-
-    SceneManager.LoadScene(escena);
-}
 
 }

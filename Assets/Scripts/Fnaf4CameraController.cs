@@ -4,6 +4,11 @@ using System.Collections;
 
 public class Fnaf4CameraController : MonoBehaviour
 {
+    
+    public string animacionDeInicio = "Intro";
+    public float duracionIntro = 5f; // ajusta según la duración real de tu animación
+    public GameObject elementosDelJuego; // los objetos que se activan después de la intro
+
     public float sensibilidadRaton = 2f;
     public float velocidadMovimiento = 2f;
 
@@ -52,17 +57,13 @@ public class Fnaf4CameraController : MonoBehaviour
 
     
     private bool inputBloqueado = false;
-
     
-    
-
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
         destinoActual = puntoCentral;
-
         rotX = camPivot.eulerAngles.y;
         rotY = camPivot.eulerAngles.x;
 
@@ -70,8 +71,11 @@ public class Fnaf4CameraController : MonoBehaviour
         if (iconoA != null) iconoA.SetActive(false);
         if (iconoS != null) iconoS.SetActive(false);
         if (iconoW != null) iconoW.SetActive(false);
-        
+
+        // 🔁 INICIAR ANIMACIÓN DE INTRO
+        StartCoroutine(ReproducirIntroYActivarJuego());
     }
+
 
     void Update()
     {
@@ -572,5 +576,34 @@ public class Fnaf4CameraController : MonoBehaviour
 
         yaVolviendo = false;
     }
+    
+    IEnumerator ReproducirIntroYActivarJuego()
+    {
+        inputBloqueado = true;
+
+        if (elementosDelJuego != null)
+            elementosDelJuego.SetActive(false);
+
+        if (animadorCamara != null)
+        {
+            animadorCamara.enabled = true;
+            animadorCamara.Play(animacionDeInicio, 0, 0f);
+        }
+
+        yield return new WaitForSeconds(duracionIntro);
+
+        if (animadorCamara != null)
+        {
+            animadorCamara.Play(animacionDeInicio, 0, 1f); // forzar pose final
+            animadorCamara.Update(0f);
+            animadorCamara.enabled = false;
+        }
+
+        if (elementosDelJuego != null)
+            elementosDelJuego.SetActive(true);
+
+        inputBloqueado = false;
+    }
+
 
 }
